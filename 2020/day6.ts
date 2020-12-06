@@ -11,7 +11,6 @@ const part2 = groups.map((group) => {
     {} as Record<string, number>,
   );
   return Object.values(answers).filter((a) => a === groupSize).length;
-})
-  .reduce((a, b) => a + b, 0);
+}).reduce((a, b) => a + b, 0);
 
 console.log({ part1, part2 });
