@@ -14,7 +14,7 @@ pub fn solve() {
         ("forward", i) => x1 += i,
         ("down", i) => y1 += i,
         ("up", i) => y1 -= i,
-        (_, _) => {}
+        _ => {}
     });
 
     let mut x2 = 0;
@@ -27,7 +27,7 @@ pub fn solve() {
         }
         ("down", i) => aim += i,
         ("up", i) => aim -= i,
-        (_, _) => {}
+        _ => {}
     });
 
     println!("part 1: {}", x1 * y1);
