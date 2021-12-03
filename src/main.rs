@@ -4,5 +4,6 @@ mod year2021;
 
 fn main() {
     // year2021::day1::solve();
-    year2021::day2::solve();
+    // year2021::day2::solve();
+    year2021::day3::solve();
 }
