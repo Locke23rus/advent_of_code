@@ -6,27 +6,27 @@ pub fn solve() {
 
     // println!("{:?}", input);
 
-    let mut part1: u64 = 0;
-    let mut part2: u64 = 0;
-
-    let mut prev: u64 = input[0];
-
-    input.iter().for_each(|current| {
-        if current > &prev {
-            part1 += 1;
-        }
-        prev = *current;
-    });
-
-    prev = input[0] + input[1] + input[2];
-    for i in 3..input.len() {
-        let current = input[i] + input[i - 1] + input[i - 2];
-        if current > prev {
-            part2 += 1;
-        }
-        prev = current;
-    }
+    let part1 = count_increments(input.clone());
+    let part2: u64 = count_increments(
+        input
+            .windows(3)
+            .map(|window| window.into_iter().sum())
+            .collect::<Vec<u64>>(),
+    );
 
     println!("part 1: {}", part1);
     println!("part 2: {}", part2);
+}
+
+fn count_increments(input: Vec<u64>) -> u64 {
+    let mut result: u64 = 0;
+
+    input.into_iter().reduce(|prev, current| {
+        if current > prev {
+            result += 1;
+        }
+        current
+    });
+
+    result
 }
