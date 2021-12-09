@@ -11,25 +11,16 @@ pub fn solve() {
         sum
     });
 
-    let mut part1: usize = 0;
-    let mut part2: usize = 0;
-
-    for i in 0..9 {
-        let count = aggregated_input[i];
-        if count > 0 {
-            part1 += count * simulate(i, 80);
-            part2 += count * simulate(i, 256);
-        }
-    }
+    let part1 = simulate(aggregated_input, 80);
+    let part2 = simulate(aggregated_input, 256);
 
     println!("part 1: {}", part1);
     println!("part 2: {}", part2);
 }
 
-fn simulate(n: usize, days: usize) -> usize {
-    let mut state: [usize; 9] = [0; 9];
-    state[n] = 1;
-    (0..days).for_each(|_day| {
+fn simulate(initial_state: [usize; 9], days: usize) -> usize {
+    let mut state: [usize; 9] = initial_state;
+    for _day in 0..days {
         let mut new_state: [usize; 9] = [0; 9];
         for i in (0..=8).rev() {
             let count = state[i];
@@ -43,6 +34,6 @@ fn simulate(n: usize, days: usize) -> usize {
             }
         }
         state = new_state;
-    });
+    }
     state.iter().sum()
 }
