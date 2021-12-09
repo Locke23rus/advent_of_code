@@ -20,7 +20,7 @@ pub fn solve() {
                 .into_iter()
                 .map(|j: isize| {
                     let n = (i - j).abs();
-                    (0..=n).into_iter().map(|i| i).sum::<isize>()
+                    n * (n + 1) / 2
                 })
                 .sum()
         })
