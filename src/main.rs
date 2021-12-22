@@ -11,5 +11,6 @@ fn main() {
     // year2021::day06::solve();
     // year2021::day07::solve();
     // year2021::day08::solve();
-    year2021::day09::solve();
+    // year2021::day09::solve();
+    year2021::day10::solve();
 }
