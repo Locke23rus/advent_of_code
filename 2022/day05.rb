@@ -1,20 +1,12 @@
 input = File.read('./input/5.txt')
 
 config, moves = input.split("\n\n")
-config = config.split("\n").reverse
-stacks_count = config.first.split(' ').last.to_i
-stacks1 = Array.new(stacks_count) { |_| [] }
-
-config[1..].each do |line|
-  stacks_count.times do |i|
-    crate = line[1 + i * 4]
-    stacks1[i] << crate if crate != ' '
-  end
+stacks1 = config.split("\n").reverse.map(&:chars).transpose.filter_map do |stack|
+  stack.reject { |crate| crate == ' ' } if stack.shift.to_i.positive?
 end
-
 stacks2 = stacks1.map(&:dup)
 
-MOVE_REGEXP = /move (\d+) from (\d+) to (\d+)/.freeze
+MOVE_REGEXP = /move (\d+) from (\d+) to (\d+)/
 
 moves.split("\n").each do |move|
   amount, from, to = MOVE_REGEXP.match(move).captures.map(&:to_i)
