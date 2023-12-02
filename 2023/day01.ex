@@ -11,6 +11,10 @@ defmodule Day01 do
     "nine" => "9"
   }
 
+  @words Enum.join(Map.keys(@digits), "|")
+  @regex_first_digit ~r/\d|#{@words}/
+  @regex_last_digit ~r/\d|#{String.reverse(@words)}/
+
   def part1(input) do
     input
     |> String.split("\n", trim: true)
@@ -22,14 +26,16 @@ defmodule Day01 do
   def part2(input) do
     input
     |> String.split("\n", trim: true)
-    |> Enum.map(&scan_digits/1)
-    |> Enum.map(&String.to_integer(Enum.at(&1, 0) <> Enum.at(&1, -1)))
-    |> Enum.sum()
-  end
+    |> Enum.map(fn line ->
+      first_digit = Regex.run(@regex_first_digit, line) |> List.first()
 
-  def scan_digits(str) do
-    List.flatten(Regex.scan(~r/\d|one|two|three|four|five|six|seven|eight|nine/, str))
-    |> Enum.map(&Map.get(@digits, &1, &1))
+      last_digit =
+        Regex.run(@regex_last_digit, String.reverse(line)) |> List.first() |> String.reverse()
+
+      str = Map.get(@digits, first_digit, first_digit) <> Map.get(@digits, last_digit, last_digit)
+      String.to_integer(str)
+    end)
+    |> Enum.sum()
   end
 end
 
