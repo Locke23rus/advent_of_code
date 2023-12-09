@@ -1,5 +1,4 @@
 defmodule Day07 do
-  @cards_scores "23456789TJQKA"
   def part1(input) do
     input
     |> String.split("\n", trim: true)
@@ -7,11 +6,7 @@ defmodule Day07 do
       [hand, bid] = String.split(line, " ")
       {String.graphemes(hand), String.to_integer(bid)}
     end)
-    |> Enum.sort(fn {a, _}, {b, _} ->
-      aa = hand_score(a)
-      bb = hand_score(b)
-      aa < bb || (aa == bb && compare_hands(a, b))
-    end)
+    |> Enum.sort(fn {a, _}, {b, _} -> compare_hands_v1(a, b) end)
     |> Enum.with_index(1)
     |> Enum.map(fn {{_, bid}, index} -> bid * index end)
     |> Enum.sum()
@@ -23,16 +18,19 @@ defmodule Day07 do
     0
   end
 
-  def compare_hands(hand1, hand2) do
-    if hand1 == hand2 do
-      true
+  def compare_hands_v1(hand1, hand2) do
+    score1 = hand_score_v1(hand1)
+    score2 = hand_score_v1(hand2)
+
+    if score1 == score2 do
+      {a, b} = Enum.zip(hand1, hand2) |> Enum.filter(fn {a, b} -> a != b end) |> List.first()
+      card_score_v1(a) < card_score_v1(b)
     else
-      [{a, b} | _] = Enum.zip(hand1, hand2) |> Enum.filter(fn {a, b} -> a != b end)
-      card_score(a) < card_score(b)
+      score1 < score2
     end
   end
 
-  def hand_score(hand) do
+  def hand_score_v1(hand) do
     tally =
       hand
       |> Enum.group_by(& &1)
@@ -50,16 +48,8 @@ defmodule Day07 do
     end
   end
 
-  # def hand_score({a, a, a, a, a}), do: 6
-  # def hand_score({a, a, b, a, a}), do: 5
-  # def hand_score({a, b, b, b, a}), do: 4
-  # def hand_score({a, a, a, b, c}), do: 3
-  # def hand_score({a, b, c, b, a}), do: 2
-  # def hand_score({a, b, c, a, d}), do: 1
-  # def hand_score({a, b, c, d, e}), do: 0
-
-  def card_score(char) do
-    {index, _} = :binary.match(@cards_scores, char)
+  def card_score_v1(char) do
+    {index, _} = :binary.match("23456789TJQKA", char)
     index
   end
 end
