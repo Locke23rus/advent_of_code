@@ -17,9 +17,19 @@ defmodule Day06 do
   end
 
   def part2(input) do
-    input
-    |> String.split("\n", trim: true)
-    |> length()
+    [time, distance] =
+      input
+      |> String.split("\n", trim: true)
+      |> Enum.map(fn line ->
+        Regex.scan(~r/\d+/, line)
+        |> List.flatten()
+        |> Enum.join()
+        |> String.to_integer()
+      end)
+
+    0..time
+    |> Enum.map(&((time - &1) * &1))
+    |> Enum.count(&(&1 > distance))
   end
 end
 
