@@ -1,2 +1,5 @@
 /target
 **/*.rs.bk
+
+/2023/_build
+/2023/deps
