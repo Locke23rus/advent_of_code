@@ -18,22 +18,92 @@ defmodule Day10 do
     max_x = div(map_size(map), max_y + 1) - 1
     start_point = map |> Map.to_list() |> Enum.find(fn {_, v} -> v == "S" end) |> elem(0)
     next_step = find_next_step(map, start_point, max_x, max_y)
-    loop = build_loop(map, start_point, next_step)
+    loop = [start_point | build_loop(map, start_point, next_step)] |> MapSet.new()
 
-    div(length(loop), 2) + 1
+    points = Map.keys(map) |> MapSet.new()
+    non_loop_points = MapSet.difference(points, loop)
+    groups = group_points(non_loop_points)
+
+    groups
+    |> Enum.map(fn points ->
+      {points, get_enclosing_points(points, max_x, max_y)}
+    end)
+    |> Enum.filter(fn {points, enclosing_points} ->
+      points
+      |> Enum.all?(fn {x, y} -> x > 0 && y > 0 && x < max_x && y < max_y end) &&
+        MapSet.subset?(enclosing_points, loop)
+    end)
+    |> Enum.map(fn {points, _} ->
+      points |> Enum.count(&(Map.get(map, &1) == "."))
+    end)
+    |> Enum.sum()
+  end
+
+  def get_enclosing_points(points, max_x, max_y) do
+    set = MapSet.new(points)
+
+    points
+    |> Enum.map(&get_neighbors(&1, max_x, max_y))
+    |> List.flatten()
+    |> MapSet.new()
+    |> MapSet.difference(set)
+  end
+
+  def get_neighbors({x, y}, max_x, max_y) do
+    [
+      {x - 1, y - 1},
+      {x - 1, y},
+      {x - 1, y + 1},
+      {x, y - 1},
+      {x, y + 1},
+      {x + 1, y - 1},
+      {x + 1, y},
+      {x + 1, y + 1}
+    ]
+    |> Enum.filter(fn {x, y} -> x >= 0 && x <= max_x && y >= 0 && y <= max_y end)
+  end
+
+  def group_points(points) do
+    Stream.iterate({Enum.map(points, &[&1]), 0}, fn {prev_groups, _} ->
+      next_groups =
+        prev_groups
+        |> Enum.reduce([], fn group, acc ->
+          index = acc |> Enum.find_index(fn g -> connected_groups?(group, g) end)
+
+          case index do
+            nil ->
+              acc ++ [group]
+
+            _ ->
+              List.update_at(acc, index, &(&1 ++ group))
+          end
+        end)
+
+      {next_groups, length(prev_groups)}
+    end)
+    |> Enum.find(fn {groups, count} -> count == length(groups) end)
+    |> elem(0)
+  end
+
+  def connected_groups?(group1, group2) do
+    group1 |> Enum.any?(fn point -> Enum.any?(group2, &connected_points?(point, &1)) end)
+  end
+
+  def connected_points?({x1, y1}, {x2, y2}) do
+    (x1 == x2 && abs(y1 - y2) == 1) ||
+      (y1 == y2 && abs(x1 - x2) == 1)
   end
 
   def build_map(lines) do
     lines
     |> Enum.with_index()
-    |> Enum.reduce(%{}, fn {line, y}, acc ->
+    |> Enum.flat_map(fn {line, y} ->
       line
       |> String.graphemes()
       |> Enum.with_index()
-      |> Enum.reduce(acc, fn {char, x}, acc ->
-        Map.put(acc, {x, y}, char)
-      end)
+      |> Enum.map(fn {char, x} -> {{x, y}, char} end)
     end)
+    |> Map.new()
   end
 
   def build_loop(map, start_point, next_step) do
@@ -51,6 +121,7 @@ defmodule Day10 do
     |> Enum.take_while(fn {_, point} ->
       point !== start_point
     end)
+    |> Enum.map(&elem(&1, 1))
   end
 
   def find_next_step(map, start, max_x, max_y) do
