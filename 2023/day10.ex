@@ -25,15 +25,15 @@ defmodule Day10 do
     groups = group_points(non_loop_points)
 
     groups
-    |> Enum.map(fn points ->
-      {points, get_enclosing_points(points, max_x, max_y)}
-    end)
-    |> Enum.filter(fn {points, enclosing_points} ->
+    |> Enum.filter(fn points ->
+      enclosing_points = get_enclosing_points(points, max_x, max_y)
+
       points
       |> Enum.all?(fn {x, y} -> x > 0 && y > 0 && x < max_x && y < max_y end) &&
         MapSet.subset?(enclosing_points, loop)
     end)
-    |> Enum.map(fn {points, _} ->
+    |> IO.inspect()
+    |> Enum.map(fn points ->
       points |> Enum.count(&(Map.get(map, &1) == "."))
     end)
     |> Enum.sum()
@@ -51,14 +51,14 @@ defmodule Day10 do
 
   def get_neighbors({x, y}, max_x, max_y) do
     [
-      {x - 1, y - 1},
+      # {x - 1, y - 1},
       {x - 1, y},
-      {x - 1, y + 1},
+      # {x - 1, y + 1},
       {x, y - 1},
       {x, y + 1},
-      {x + 1, y - 1},
-      {x + 1, y},
-      {x + 1, y + 1}
+      # {x + 1, y - 1},
+      {x + 1, y}
+      # {x + 1, y + 1}
     ]
     |> Enum.filter(fn {x, y} -> x >= 0 && x <= max_x && y >= 0 && y <= max_y end)
   end
