@@ -1,6 +1,11 @@
 #!/usr/bin/env tclsh
 
-source "helpers.tcl"
+proc readlines {file} {
+    set fd [open $file r]
+    set lines [split [read -nonewline $fd] \n]
+    close $fd
+    return $lines
+}
 
 set lines [readlines "input/01.txt"]
 
