@@ -12,3 +12,6 @@ indent_size = 4
 
 [*.tcl]
 indent_size = 4
+
+[*.pl]
+indent_size = 4

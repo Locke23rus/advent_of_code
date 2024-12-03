@@ -14,5 +14,6 @@
 pkgs.mkShell {
   buildInputs = with pkgs; [
     unstable.tcl-9_0
+    unstable.swi-prolog
   ];
 }
